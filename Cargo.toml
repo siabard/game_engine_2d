@@ -1,0 +1,7 @@
+[package]
+name = "game_engine_2d"
+version = "0.1.0"
+authors = ["Yeonho Jang <siabard@gmail.com>"]
+
+[dependencies]
+sdl2 = "*"
