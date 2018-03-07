@@ -1,8 +1,8 @@
 //! Game Engine structure
 extern crate sdl2;
 
-use sdl2::event::Event;
-use sdl2::keyboard::Keycode;
+use std::path::Path;
+use sdl2::image::{LoadTexture, INIT_JPG, INIT_PNG};
 
 /// Main Structure
 ///
@@ -16,81 +16,30 @@ use sdl2::keyboard::Keycode;
 ///     game.render();
 /// }
 /// ```
-pub struct Game {
-    is_running: bool,
-    canvas: sdl2::render::WindowCanvas,
-    event_pump: sdl2::EventPump,
+
+pub struct Game<'a> {
+    texture_creator: &'a sdl2::render::TextureCreator<sdl2::video::WindowContext>,
+    /// textures
+    pub textures: Vec<sdl2::render::Texture<'a>>,
 }
 
-impl Game {
+impl<'a> Game<'a> {
     /// initializer
     pub fn new(
-        title: &'static str,
-        xpos: i32,
-        ypos: i32,
-        width: u32,
-        height: u32,
-        fullscreen: bool,
-    ) -> Game {
-        let context = sdl2::init().expect("Cannot Initialize SDL2");
-        let video_subsystem = context.video().unwrap();
-
-        let window = if fullscreen {
-            video_subsystem
-                .window(title, width, height)
-                .position(xpos, ypos)
-                .fullscreen()
-                .build()
-                .unwrap()
-        } else {
-            video_subsystem
-                .window(title, width, height)
-                .position(xpos, ypos)
-                .build()
-                .unwrap()
-        };
-
-        let canvas = window.into_canvas().accelerated().build().unwrap();
-        let event_pump = context.event_pump().unwrap();
+        texture_creator: &'a sdl2::render::TextureCreator<sdl2::video::WindowContext>,
+    ) -> Self {
         Game {
-            canvas: canvas,
-            is_running: true,
-            event_pump: event_pump,
+            texture_creator: texture_creator,
+            textures: Vec::new(),
         }
     }
 
-    /// update Game objects
-    ///
-    /// Game logic is located here.
-    pub fn update(&mut self) {}
+    /// texture 추가
+    pub fn add_texture(&mut self, path: &'static str) {
+        let img: &'a Path = Path::new(path);
 
-    /// Render Screen
-    pub fn render(&mut self) {
-        self.canvas.clear();
-        self.canvas.present();
-    }
-
-    /// Clear all object
-    pub fn clean(&self) {}
-
-    /// Event Hadler
-    pub fn handle_event(&mut self) {
-        for event in self.event_pump.poll_iter() {
-            match event {
-                Event::Quit { .. }
-                | Event::KeyDown {
-                    keycode: Some(Keycode::Escape),
-                    ..
-                } => {
-                    self.is_running = false;
-                }
-                _ => {}
-            }
-        }
-    }
-
-    /// predicate about game is running
-    pub fn running(&self) -> bool {
-        self.is_running
+        let texture_creator = self.texture_creator;
+        let texture: sdl2::render::Texture<'a> = (*texture_creator).load_texture(img).unwrap();
+        self.textures.push(texture);
     }
 }
