@@ -3,7 +3,7 @@ extern crate sdl2;
 extern crate std;
 
 use sdl2::pixels::Color;
-use game::*;
+use sprite::*;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::image::{INIT_JPG, INIT_PNG};
@@ -80,12 +80,12 @@ impl App {
         let mut event_pump = context.event_pump().unwrap();
         let texture_creator = canvas.texture_creator();
 
-        let mut game = Game::new(&texture_creator);
+        let mut sprite = Sprite::new(&texture_creator);
         let _src_r = sdl2::rect::Rect::new(0, 0, 32, 32);
         let mut dest_r = sdl2::rect::Rect::new(0, 0, 64, 64);
 
         for a in &self.assets {
-            game.add_texture(*a);
+            sprite.add_texture(*a);
         }
 
         let mut is_running = true;
@@ -108,7 +108,7 @@ impl App {
 
             canvas.clear();
             dest_r.set_x(cnt);
-            for texture in &game.textures {
+            for texture in &sprite.textures {
                 canvas.copy(texture, None, dest_r).expect("render fail");
             }
             canvas.present();

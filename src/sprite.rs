@@ -17,18 +17,18 @@ use sdl2::image::{LoadTexture, INIT_JPG, INIT_PNG};
 /// }
 /// ```
 
-pub struct Game<'a> {
+pub struct Sprite<'a> {
     texture_creator: &'a sdl2::render::TextureCreator<sdl2::video::WindowContext>,
     /// textures
     pub textures: Vec<sdl2::render::Texture<'a>>,
 }
 
-impl<'a> Game<'a> {
+impl<'a> Sprite<'a> {
     /// initializer
     pub fn new(
         texture_creator: &'a sdl2::render::TextureCreator<sdl2::video::WindowContext>,
     ) -> Self {
-        Game {
+        Sprite {
             texture_creator: texture_creator,
             textures: Vec::new(),
         }
