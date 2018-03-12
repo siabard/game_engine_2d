@@ -78,13 +78,15 @@ impl App {
         let mut texture_creator = canvas.texture_creator();
 
         let mut game = Game::new(&texture_creator);
+        let mut srcR = sdl2::rect::Rect::new(0, 0, 32, 32);
+        let mut destR = sdl2::rect::Rect::new(0, 0, 64, 64);
 
         for a in &self.assets {
             game.add_texture(*a);
         }
 
         let mut is_running = true;
-
+        let mut cnt = 0;
         while is_running {
             for event in event_pump.poll_iter() {
                 match event {
@@ -101,10 +103,13 @@ impl App {
 
             canvas.clear();
 
+            destR.x = cnt / 100;
+            println!("{:?}", destR);
             for texture in &game.textures {
-                canvas.copy(texture, None, None).expect("render fail");
+                canvas.copy(texture, None, destR).expect("render fail");
             }
             canvas.present();
+            cnt = cnt + 1;
         }
     }
 }
