@@ -7,7 +7,6 @@ use game::*;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::image::{INIT_JPG, INIT_PNG};
-use std::thread::*;
 
 const FPS: u32 = 60;
 const FRAME_DELAY: u32 = 1000 / FPS;
@@ -82,8 +81,8 @@ impl App {
         let texture_creator = canvas.texture_creator();
 
         let mut game = Game::new(&texture_creator);
-        let _srcR = sdl2::rect::Rect::new(0, 0, 32, 32);
-        let mut destR = sdl2::rect::Rect::new(0, 0, 64, 64);
+        let _src_r = sdl2::rect::Rect::new(0, 0, 32, 32);
+        let mut dest_r = sdl2::rect::Rect::new(0, 0, 64, 64);
 
         for a in &self.assets {
             game.add_texture(*a);
@@ -108,9 +107,9 @@ impl App {
             }
 
             canvas.clear();
-            destR.set_x(cnt);
+            dest_r.set_x(cnt);
             for texture in &game.textures {
-                canvas.copy(texture, None, destR).expect("render fail");
+                canvas.copy(texture, None, dest_r).expect("render fail");
             }
             canvas.present();
 
