@@ -2,8 +2,13 @@
 name = "game_engine_2d"
 version = "0.1.0"
 authors = ["Yeonho Jang <siabard@gmail.com>"]
+build="build.rs"
+
+[features]
+default = []
+use_sdl2_mac_framework = ["sdl2/use_mac_framework"]
 
 [dependencies.sdl2]
 version = "*"
 default-features = false
-features = ["ttf","image","gfx","mixer"]
+features = ["use_mac_framework","image","ttf","mixer","gfx"]
