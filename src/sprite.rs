@@ -19,27 +19,62 @@ use sdl2::image::{LoadTexture, INIT_JPG, INIT_PNG};
 
 pub struct Sprite<'a> {
     texture_creator: &'a sdl2::render::TextureCreator<sdl2::video::WindowContext>,
-    /// textures
-    pub textures: Vec<sdl2::render::Texture<'a>>,
+    textures: Option<sdl2::render::Texture<'a>>,
+    xpos: i32,
+    ypos: i32,
+    src_rect: sdl2::rect::Rect,
+    dest_rect: sdl2::rect::Rect,
 }
 
 impl<'a> Sprite<'a> {
     /// initializer
     pub fn new(
         texture_creator: &'a sdl2::render::TextureCreator<sdl2::video::WindowContext>,
+        xpos: i32,
+        ypos: i32,
     ) -> Self {
         Sprite {
             texture_creator: texture_creator,
-            textures: Vec::new(),
+            textures: None,
+            xpos: xpos,
+            ypos: ypos,
+            src_rect: sdl2::rect::Rect::new(0, 0, 0, 0),
+            dest_rect: sdl2::rect::Rect::new(0, 0, 0, 0),
+        }
+    }
+
+    /// update
+    pub fn update(&mut self) {
+        self.xpos = self.xpos + 1;
+        self.ypos = self.ypos + 1;
+        self.src_rect.set_width(32);
+        self.src_rect.set_height(32);
+        self.src_rect.x = 0;
+        self.src_rect.y = 0;
+
+        self.dest_rect.x = self.xpos;
+        self.dest_rect.y = self.ypos;
+        self.dest_rect.set_width(self.src_rect.width() * 2);
+        self.dest_rect.set_height(self.src_rect.height() * 2);
+    }
+
+    /// render
+    pub fn render(&self, canvas: &mut sdl2::render::Canvas<sdl2::video::Window>) {
+        let texture = self.textures.as_ref();
+        match texture {
+            Some(t) => canvas
+                .copy(&t, self.src_rect, self.dest_rect)
+                .expect("render fail"),
+            None => {}
         }
     }
 
     /// texture 추가
-    pub fn add_texture(&mut self, path: &'static str) {
+    pub fn set_texture(&mut self, path: &'static str) {
         let img: &'a Path = Path::new(path);
 
         let texture_creator = self.texture_creator;
         let texture: sdl2::render::Texture<'a> = (*texture_creator).load_texture(img).unwrap();
-        self.textures.push(texture);
+        self.textures = Some(texture);
     }
 }

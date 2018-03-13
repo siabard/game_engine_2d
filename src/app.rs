@@ -80,16 +80,14 @@ impl App {
         let mut event_pump = context.event_pump().unwrap();
         let texture_creator = canvas.texture_creator();
 
-        let mut sprite = Sprite::new(&texture_creator);
-        let _src_r = sdl2::rect::Rect::new(0, 0, 32, 32);
+        let mut sprite = Sprite::new(&texture_creator, 0, 0);
         let mut dest_r = sdl2::rect::Rect::new(0, 0, 64, 64);
 
         for a in &self.assets {
-            sprite.add_texture(*a);
+            sprite.set_texture(*a);
         }
 
         let mut is_running = true;
-        let mut cnt = 0;
 
         while is_running {
             let start_tick = timer.ticks();
@@ -107,17 +105,15 @@ impl App {
             }
 
             canvas.clear();
-            dest_r.set_x(cnt);
-            for texture in &sprite.textures {
-                canvas.copy(texture, None, dest_r).expect("render fail");
-            }
+
+            sprite.update();
+            sprite.render(&mut canvas);
+
             canvas.present();
 
             let tick_span = timer.ticks() - start_tick;
 
             if tick_span < FRAME_DELAY {
-                cnt = cnt + 1;
-
                 std::thread::sleep(std::time::Duration::from_millis(
                     (FRAME_DELAY - tick_span) as u64,
                 ));
