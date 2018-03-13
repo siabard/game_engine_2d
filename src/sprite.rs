@@ -43,6 +43,16 @@ impl<'a> Sprite<'a> {
         }
     }
 
+    /// set_xpos
+    pub fn set_xpos(&mut self, xpos: i32) {
+        self.xpos = xpos;
+    }
+
+    /// set_ypos
+    pub fn set_ypos(&mut self, ypos: i32) {
+        self.ypos = ypos;
+    }
+
     /// update
     pub fn update(&mut self) {
         self.xpos = self.xpos + 1;

@@ -6,8 +6,8 @@ fn main() {
     let mut app = App::new("SDL 테스트", 100, 100, 800, 600, false);
 
     // 이미지를 등록한다.
-    let png = "assets/char.png";
 
-    app.add_asset(png);
+    app.add_asset("char", "assets/char.png");
+    app.add_asset("enemy", "assets/enemy.png");
     app.run_loop();
 }

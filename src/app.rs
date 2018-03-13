@@ -7,6 +7,7 @@ use sprite::*;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::image::{INIT_JPG, INIT_PNG};
+use std::collections::HashMap;
 
 const FPS: u32 = 60;
 const FRAME_DELAY: u32 = 1000 / FPS;
@@ -19,7 +20,7 @@ pub struct App {
     width: u32,
     height: u32,
     fullscreen: bool,
-    assets: Vec<&'static str>,
+    assets: HashMap<&'static str, &'static str>,
 }
 
 impl App {
@@ -40,15 +41,15 @@ impl App {
             width: width,
             height: height,
             fullscreen: fullscreen,
-            assets: Vec::new(),
+            assets: HashMap::new(),
         };
 
         app
     }
 
     /// Add Asset
-    pub fn add_asset(&mut self, path: &'static str) {
-        self.assets.push(path);
+    pub fn add_asset(&mut self, id: &'static str, path: &'static str) {
+        self.assets.insert(id, path);
     }
 
     /// run_loop
@@ -80,11 +81,15 @@ impl App {
         let mut event_pump = context.event_pump().unwrap();
         let texture_creator = canvas.texture_creator();
 
-        let mut sprite = Sprite::new(&texture_creator, 0, 0);
-        let mut dest_r = sdl2::rect::Rect::new(0, 0, 64, 64);
+        let mut sprites = HashMap::new();
 
-        for a in &self.assets {
-            sprite.set_texture(*a);
+        let mut pos: i32 = 0;
+        for (id, path) in &self.assets {
+            let mut sprite = Sprite::new(&texture_creator, pos, pos);
+            sprite.set_texture(path);
+            sprites.insert(id, sprite);
+
+            pos = pos + 32;
         }
 
         let mut is_running = true;
@@ -106,8 +111,10 @@ impl App {
 
             canvas.clear();
 
-            sprite.update();
-            sprite.render(&mut canvas);
+            for (_id, sprite) in &mut sprites {
+                sprite.update();
+                sprite.render(&mut canvas);
+            }
 
             canvas.present();
 
