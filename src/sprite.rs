@@ -2,7 +2,7 @@
 extern crate sdl2;
 
 use std::path::Path;
-use sdl2::image::{LoadTexture, INIT_JPG, INIT_PNG};
+use sdl2::image::LoadTexture;
 
 /// Main Structure
 ///
