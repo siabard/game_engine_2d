@@ -56,6 +56,22 @@ impl<'a> Sprite<'a> {
         self.ypos = ypos;
     }
 
+    /// set source rectangle
+    pub fn set_src_rect(&mut self, src_rect: &sdl2::rect::Rect) {
+        self.src_rect.x = src_rect.x;
+        self.src_rect.y = src_rect.y;
+        self.src_rect.set_width(src_rect.width());
+        self.src_rect.set_height(src_rect.height());
+    }
+
+    /// set source rectangle
+    pub fn set_dest_rect(&mut self, dest_rect: &sdl2::rect::Rect) {
+        self.dest_rect.x = dest_rect.x;
+        self.dest_rect.y = dest_rect.y;
+        self.dest_rect.set_width(dest_rect.width());
+        self.dest_rect.set_height(dest_rect.height());
+    }
+
     /// update
     pub fn update(&mut self) {
         self.xpos = self.xpos + 1;
