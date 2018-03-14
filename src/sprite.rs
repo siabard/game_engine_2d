@@ -1,4 +1,7 @@
-//! Game Engine structure
+//!# Sprite
+//!
+//! 게임내 Sprite 노출처리
+
 extern crate sdl2;
 
 use std::path::Path;
@@ -19,7 +22,7 @@ use sdl2::image::LoadTexture;
 
 pub struct Sprite<'a> {
     texture_creator: &'a sdl2::render::TextureCreator<sdl2::video::WindowContext>,
-    textures: Option<sdl2::render::Texture<'a>>,
+    texture: Option<sdl2::render::Texture<'a>>,
     xpos: i32,
     ypos: i32,
     src_rect: sdl2::rect::Rect,
@@ -35,7 +38,7 @@ impl<'a> Sprite<'a> {
     ) -> Self {
         Sprite {
             texture_creator: texture_creator,
-            textures: None,
+            texture: None,
             xpos: xpos,
             ypos: ypos,
             src_rect: sdl2::rect::Rect::new(0, 0, 0, 0),
@@ -70,7 +73,7 @@ impl<'a> Sprite<'a> {
 
     /// render
     pub fn render(&self, canvas: &mut sdl2::render::Canvas<sdl2::video::Window>) {
-        let texture = self.textures.as_ref();
+        let texture = self.texture.as_ref();
         match texture {
             Some(t) => canvas
                 .copy(&t, self.src_rect, self.dest_rect)
@@ -85,6 +88,6 @@ impl<'a> Sprite<'a> {
 
         let texture_creator = self.texture_creator;
         let texture: sdl2::render::Texture<'a> = (*texture_creator).load_texture(img).unwrap();
-        self.textures = Some(texture);
+        self.texture = Some(texture);
     }
 }

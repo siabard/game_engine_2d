@@ -1,4 +1,7 @@
-//! SDL 오브젝트 관리
+//! # GameObject
+//!
+//! SDL 게임내부 메커니즘 담당
+//! (render, event 등 처리)
 
 extern crate sdl2;
 extern crate std;

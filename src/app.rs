@@ -1,4 +1,6 @@
-//! Main application
+//! # Main application
+//!
+//! 이 모듈은 SDL의 초기화와 ASSET의 설정을 담당한다.
 extern crate sdl2;
 extern crate std;
 
