@@ -6,7 +6,6 @@ extern crate std;
 
 use sdl2::pixels::Color;
 use sdl2::image::{INIT_JPG, INIT_PNG};
-use std::collections::HashMap;
 use game_object::*;
 
 /// App
@@ -17,7 +16,6 @@ pub struct App {
     width: u32,
     height: u32,
     fullscreen: bool,
-    assets: HashMap<&'static str, &'static str>,
 }
 
 impl App {
@@ -38,15 +36,9 @@ impl App {
             width: width,
             height: height,
             fullscreen: fullscreen,
-            assets: HashMap::new(),
         };
 
         app
-    }
-
-    /// Add Asset
-    pub fn add_asset(&mut self, id: &'static str, path: &'static str) {
-        self.assets.insert(id, path);
     }
 
     /// run program
