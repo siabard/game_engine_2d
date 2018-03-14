@@ -8,6 +8,7 @@ extern crate std;
 
 use std::collections::HashMap;
 use sprite::*;
+use map::*;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 
@@ -26,6 +27,9 @@ pub struct SdlEngine<'a> {
     pub timer: sdl2::TimerSubsystem,
     /// Sprites
     pub sprites: HashMap<&'static str, Sprite<'a>>,
+    /// Map
+    pub map: Map<'a>,
+
     is_running: bool,
 }
 
@@ -37,6 +41,8 @@ impl<'a> SdlEngine<'a> {
         texture_creator: &'a sdl2::render::TextureCreator<sdl2::video::WindowContext>,
         timer: sdl2::TimerSubsystem,
     ) -> SdlEngine<'a> {
+        let map = Map::new(&texture_creator);
+
         SdlEngine {
             window: window,
             event_pump: event_pump,
@@ -44,6 +50,7 @@ impl<'a> SdlEngine<'a> {
             sprites: HashMap::new(),
             timer: timer,
             is_running: false,
+            map: map,
         }
     }
 
@@ -80,6 +87,7 @@ impl<'a> SdlEngine<'a> {
 
             self.window.clear();
 
+            self.map.draw_map(&mut self.window);
             for (_id, sprite) in &mut self.sprites {
                 sprite.update();
                 sprite.render(&mut self.window);
