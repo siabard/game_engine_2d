@@ -6,7 +6,7 @@ extern crate std;
 
 use sdl2::pixels::Color;
 use sdl2::image::{INIT_JPG, INIT_PNG};
-use game_object::*;
+use sdl_engine::*;
 
 /// App
 pub struct App {
@@ -70,11 +70,11 @@ impl App {
         let event_pump = context.event_pump().unwrap();
         let texture_creator = canvas.texture_creator();
 
-        let mut gobject: GameObject = GameObject::new(canvas, event_pump, &texture_creator, timer);
+        let mut engine: SdlEngine = SdlEngine::new(canvas, event_pump, &texture_creator, timer);
 
-        gobject.add_sprite("char", "assets/char.png", 0, 0);
-        gobject.add_sprite("enemy", "assets/enemy.png", 50, 50);
+        engine.add_sprite("char", "assets/char.png", 0, 0);
+        engine.add_sprite("enemy", "assets/enemy.png", 50, 50);
 
-        gobject.game_loop();
+        engine.game_loop();
     }
 }

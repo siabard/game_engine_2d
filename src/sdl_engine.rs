@@ -14,8 +14,8 @@ use sdl2::keyboard::Keycode;
 const FPS: u32 = 60;
 const FRAME_DELAY: u32 = 1000 / FPS;
 
-/// GameObject
-pub struct GameObject<'a> {
+/// SdlEngine
+pub struct SdlEngine<'a> {
     /// window
     pub window: sdl2::render::Canvas<sdl2::video::Window>,
     /// event_pump
@@ -29,15 +29,15 @@ pub struct GameObject<'a> {
     is_running: bool,
 }
 
-impl<'a> GameObject<'a> {
+impl<'a> SdlEngine<'a> {
     /// Constructor
     pub fn new(
         window: sdl2::render::Canvas<sdl2::video::Window>,
         event_pump: sdl2::EventPump,
         texture_creator: &'a sdl2::render::TextureCreator<sdl2::video::WindowContext>,
         timer: sdl2::TimerSubsystem,
-    ) -> GameObject<'a> {
-        GameObject {
+    ) -> SdlEngine<'a> {
+        SdlEngine {
             window: window,
             event_pump: event_pump,
             texture_creator: Some(texture_creator),

@@ -7,4 +7,4 @@ extern crate sdl2;
 
 pub mod app;
 pub mod sprite;
-pub mod game_object;
+pub mod sdl_engine;
