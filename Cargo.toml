@@ -8,6 +8,9 @@ build="build.rs"
 default = []
 use_sdl2_mac_framework = ["sdl2/use_mac_framework"]
 
+[dependencies]
+uuid = { version = "0.6", features = ["v4"] }
+
 [dependencies.sdl2]
 version = "*"
 default-features = false

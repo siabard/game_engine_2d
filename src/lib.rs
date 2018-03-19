@@ -4,8 +4,11 @@
 #![deny(missing_docs)]
 
 extern crate sdl2;
+extern crate uuid;
 
 pub mod app;
 pub mod sprite;
 pub mod sdl_engine;
 pub mod map;
+pub mod ecs;
+pub mod components;

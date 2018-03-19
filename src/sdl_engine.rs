@@ -9,6 +9,8 @@ extern crate std;
 use std::collections::HashMap;
 use sprite::*;
 use map::*;
+use ecs::*;
+use components::*;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 
@@ -80,6 +82,14 @@ impl<'a> SdlEngine<'a> {
     /// game loop
     pub fn game_loop(&mut self) {
         self.is_running = true;
+
+        let mut player1 = Entity::new();
+        player1.add_component(PositionComponent {
+            xpos: 50,
+            ypos: 50,
+            is_active: true,
+        });
+
         while self.is_running {
             let start_tick = self.timer.ticks();
 
@@ -95,6 +105,9 @@ impl<'a> SdlEngine<'a> {
 
             self.window.present();
 
+            let _ = player1
+                .get_component_mut::<PositionComponent>()
+                .map(|e| e.update());
             let tick_span = self.timer.ticks() - start_tick;
 
             if tick_span < FRAME_DELAY {
