@@ -74,30 +74,43 @@ impl App {
 
         let mut engine: SdlEngine = SdlEngine::new(canvas, event_pump, &texture_creator, timer);
 
-        //engine.add_sprite("char", "assets/char.png", 0, 0);
-        //engine.add_sprite("enemy", "assets/enemy.png", 50, 50);
+        // Adding some resource...
+        engine.add_texture("char", "assets/char.png");
+        engine.add_texture("enemy", "assets/enemy.png");
 
+        // Initiate Entities
         let mut player1 = Entity::new("player1".to_owned());
-        let mut player2 = Entity::new("enemy".to_owned());
+        let mut enemy = Entity::new("enemy".to_owned());
 
-        player1.add_component::<PositionComponent>(PositionComponent { xpos: 50, ypos: 50 });
+        // Entity Player 1 Init
+        player1.add_component::<PositionComponent>(PositionComponent {
+            entity_id: "player1".to_owned(),
+            xpos: 50,
+            ypos: 50,
+        });
         player1.add_component::<SpriteComponent>(SpriteComponent {
-            sprite_id: "char",
-            sprite_path: "assets/char.png",
+            entity_id: "player1".to_owned(),
+            texture_id: "char".to_owned(),
+            source_rect: sdl2::rect::Rect::new(0, 0, 32, 32),
+            dest_rect: sdl2::rect::Rect::new(0, 0, 64, 64),
         });
 
-        player2.add_component::<PositionComponent>(PositionComponent {
+        // Entity Player 2 Init
+        enemy.add_component::<PositionComponent>(PositionComponent {
+            entity_id: "enemy".to_owned(),
             xpos: 100,
             ypos: 100,
         });
-        player2.add_component::<SpriteComponent>(SpriteComponent {
-            sprite_id: "enemy",
-            sprite_path: "assets/enemy.png",
+        enemy.add_component::<SpriteComponent>(SpriteComponent {
+            entity_id: "enemy".to_owned(),
+            texture_id: "enemy".to_owned(),
+            source_rect: sdl2::rect::Rect::new(0, 0, 32, 32),
+            dest_rect: sdl2::rect::Rect::new(0, 0, 64, 64),
         });
-        engine.add_entity("char", player1);
-        engine.add_entity("enemy", player2);
 
-        engine.init_sprite();
+        // Add entities to engine
+        engine.add_entity("player1", player1);
+        engine.add_entity("enemy", enemy);
 
         engine.game_loop();
     }

@@ -3,6 +3,8 @@ extern crate sdl2;
 
 /// Position Component
 pub struct PositionComponent {
+    /// entity_id
+    pub entity_id: String,
     /// xpos
     pub xpos: i32,
     /// ypos
@@ -71,17 +73,23 @@ impl HealthComponent {
 /// Sprite Component
 pub struct SpriteComponent {
     /// sprite_id
-    pub sprite_id: &'static str,
-    /// path
-    pub sprite_path: &'static str,
+    pub entity_id: String,
+    /// texture_id
+    pub texture_id: String,
+    /// Source_rect
+    pub source_rect: sdl2::rect::Rect,
+    /// target_rect
+    pub dest_rect: sdl2::rect::Rect,
 }
 
 impl SpriteComponent {
     /// new
-    pub fn new(sprite_id: &'static str, sprite_path: &'static str) -> Self {
+    pub fn new(sprite_id: &'static str, texture_id: &'static str) -> Self {
         SpriteComponent {
-            sprite_id: sprite_id,
-            sprite_path: sprite_path,
+            entity_id: sprite_id.to_owned(),
+            texture_id: texture_id.to_owned(),
+            source_rect: sdl2::rect::Rect::new(0, 0, 0, 0),
+            dest_rect: sdl2::rect::Rect::new(0, 0, 0, 0),
         }
     }
 

@@ -85,12 +85,11 @@ impl System {
     }
 
     /// create_entity
-    pub fn create_entity(&mut self) -> &String {
+    pub fn create_entity(&mut self) {
         let entity_id = Uuid::new_v4().simple().to_string();
 
         self.entities
-            .insert(entity_id.clone(), Entity::new(entity_id.clone()));
-        &self.entities.get(&entity_id).unwrap().entity_id
+            .insert(entity_id.clone(), Entity::new(entity_id));
     }
 
     /// set method

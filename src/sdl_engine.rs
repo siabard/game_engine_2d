@@ -7,12 +7,13 @@ extern crate sdl2;
 extern crate std;
 
 use std::collections::HashMap;
-use sprite::*;
 use map::*;
 use ecs::*;
 use components::*;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
+use std::path::Path;
+use sdl2::image::LoadTexture;
 
 const FPS: u32 = 60;
 const FRAME_DELAY: u32 = 1000 / FPS;
@@ -25,7 +26,7 @@ pub enum NoSprite {
     CannotFound,
 }
 
-/// Sprite Result
+/// Sprite Result{}
 pub type ResultSprite<T> = Result<T, NoSprite>;
 
 /// SdlEngine
@@ -38,14 +39,14 @@ pub struct SdlEngine<'a> {
     pub texture_creator: Option<&'a sdl2::render::TextureCreator<sdl2::video::WindowContext>>,
     /// timer
     pub timer: sdl2::TimerSubsystem,
-    /// Sprites
-    pub sprites: HashMap<&'static str, Sprite<'a>>,
+    /// Textures
+    pub textures: HashMap<String, sdl2::render::Texture<'a>>,
     /// Map
     pub map: Map<'a>,
 
     is_running: bool,
     /// Entities
-    entities: HashMap<&'static str, Entity>,
+    entities: HashMap<String, Entity>,
 }
 
 impl<'a> SdlEngine<'a> {
@@ -62,7 +63,7 @@ impl<'a> SdlEngine<'a> {
             window: window,
             event_pump: event_pump,
             texture_creator: Some(texture_creator),
-            sprites: HashMap::new(),
+            textures: HashMap::new(),
             timer: timer,
             is_running: false,
             map: map,
@@ -71,10 +72,11 @@ impl<'a> SdlEngine<'a> {
     }
 
     /// add sprite
-    pub fn add_sprite(&mut self, id: &'static str, path: &'static str, xpos: i32, ypos: i32) {
-        let mut sprite = Sprite::new(&self.texture_creator.unwrap(), xpos, ypos);
-        sprite.set_texture(path);
-        self.sprites.insert(id, sprite);
+    pub fn add_texture(&mut self, texture_id: &'static str, path: &'static str) {
+        let img: &'a Path = Path::new(path);
+        let texture = (*self.texture_creator.unwrap()).load_texture(img).unwrap();
+
+        self.textures.insert(texture_id.to_owned(), texture);
     }
 
     /// event manipulation
@@ -95,29 +97,14 @@ impl<'a> SdlEngine<'a> {
 
     /// insert entity
     pub fn add_entity(&mut self, entity_id: &'static str, entity: Entity) {
-        self.entities.insert(entity_id, entity);
+        self.entities.insert(entity_id.to_owned(), entity);
     }
 
     /// remove_entity
     pub fn remove_entity(&mut self, entity_id: &'static str) {
-        self.entities.remove(entity_id);
+        self.entities.remove(&entity_id.to_owned());
     }
 
-    /// init_sprite
-    ///
-    /// SpriteComponent 를 가지고 있는 Entity가 있으면 대응하는 Sprite를 생성한다.
-    pub fn init_sprite(&mut self) {
-        for (id, entity) in &self.entities {
-            match entity.get_component::<SpriteComponent>() {
-                Ok(c) => {
-                    let mut sprite = Sprite::new(&self.texture_creator.unwrap(), 0, 0);
-                    sprite.set_texture(c.sprite_path);
-                    self.sprites.insert(id, sprite);
-                }
-                Err(_) => {}
-            }
-        }
-    }
     /// game loop
     pub fn game_loop(&mut self) {
         self.is_running = true;
@@ -132,27 +119,50 @@ impl<'a> SdlEngine<'a> {
             // Rendering Screen
             self.map.draw_map(&mut self.window);
 
-            // ECS를 이용한 렌더랑을 걸어보자!!!
+            let mut xpos = HashMap::new();
+            let mut ypos = HashMap::new();
+
+            // ECS를 이용한 렌더링을 걸어보자!!!
             for (id, entity) in &mut self.entities {
                 // PositionComponent를 갖는 경우 일정 틱마다 위치를 변경한다.
-                let pos = match entity.get_component_mut::<PositionComponent>() {
-                    Ok(mut p) => {
-                        p.update();
-                        p
+                match entity.get_component::<PositionComponent>() {
+                    Ok(p) => {
+                        xpos.insert(id.clone(), p.xpos);
+                        ypos.insert(id.clone(), p.ypos);
                     }
-                    Err(_) => &PositionComponent { xpos: 0, ypos: 0 },
+                    Err(_) => {}
                 };
+            }
+            for (id, entity) in &mut self.entities {
+                // SpriteComponent를 갖는 경우 해당 위치에 Sprite를 노출한다.
+                match entity.get_component_mut::<SpriteComponent>() {
+                    Ok(mut c) => {
+                        let texture_id = c.texture_id.clone();
 
-                // 등록된 Sprite는 해당 ID에 따라서 지정 위치에 노출한다.
-                match self.sprites.get_mut(id.to_owned()) {
-                    Some(s) => {
-                        s.set_xpos(pos.xpos);
-                        s.set_ypos(pos.ypos);
-                        s.update();
-                        s.render(&mut self.window);
+                        let texture = self.textures.get(&texture_id);
+
+                        c.dest_rect.x = *xpos.get(&id.clone()).unwrap();
+                        c.dest_rect.y = *ypos.get(&id.clone()).unwrap();
+
+                        println!("{}", c.dest_rect.x);
+                        println!("{}", c.dest_rect.y);
+                        let t = texture.as_ref().unwrap();
+                        self.window
+                            .copy(t, c.source_rect, c.dest_rect)
+                            .expect("render fail");
                     }
-                    _ => {}
+                    Err(_) => {}
                 }
+            }
+
+            for (id, entity) in &mut self.entities {
+                // PositionComponent를 갖는 경우 일정 틱마다 위치를 변경한다.
+                match entity.get_component_mut::<PositionComponent>() {
+                    Ok(p) => {
+                        p.update();
+                    }
+                    Err(_) => {}
+                };
             }
             self.window.present();
 
