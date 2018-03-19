@@ -74,8 +74,8 @@ impl<'a> Sprite<'a> {
 
     /// update
     pub fn update(&mut self) {
-        self.xpos = self.xpos + 1;
-        self.ypos = self.ypos + 1;
+        //self.xpos = self.xpos + 1;
+        //self.ypos = self.ypos + 1;
         self.src_rect.set_width(32);
         self.src_rect.set_height(32);
         self.src_rect.x = 0;

@@ -1,6 +1,10 @@
 //! Components Definition
+extern crate sdl2;
 
 use ecs::*;
+use std::path::Path;
+use sdl2::image::LoadTexture;
+use sprite::*;
 
 /// Position Component
 pub struct PositionComponent {
@@ -8,8 +12,6 @@ pub struct PositionComponent {
     pub xpos: i32,
     /// ypos
     pub ypos: i32,
-    /// is_active
-    pub is_active: bool,
 }
 
 impl PositionComponent {
@@ -31,30 +33,14 @@ impl PositionComponent {
 }
 
 impl Component for PositionComponent {
-    /// get name
-    fn get_name(&self) -> &'static str {
-        "position_component"
-    }
-
     /// init
     fn init(&mut self) {
         self.xpos = 0;
         self.ypos = 0;
-        self.is_active = true;
     }
 
     /// draw
     fn draw(&self) {}
-
-    /// is_active
-    fn is_active(&self) -> bool {
-        true
-    }
-
-    /// destroy
-    fn destroy(&mut self) {
-        self.is_active = false;
-    }
 
     /// update
     fn update(&mut self) {
@@ -66,7 +52,6 @@ impl Component for PositionComponent {
 /// Health Compoent
 pub struct HealthComponent {
     hp: u32,
-    active: bool,
 }
 
 impl HealthComponent {
@@ -85,22 +70,34 @@ impl Component for HealthComponent {
     fn init(&mut self) {
         self.hp = 0;
     }
-    /// get_name
-    fn get_name(&self) -> &'static str {
-        "health_component"
-    }
     /// draw
     fn draw(&self) {}
 
-    /// return active
-    fn is_active(&self) -> bool {
-        self.active
-    }
+    /// update
+    fn update(&mut self) {}
+}
 
-    /// destroy
-    fn destroy(&mut self) {
-        self.active = false;
+/// Sprite Component
+pub struct SpriteComponent {
+    /// sprite_id
+    pub sprite_id: String,
+}
+
+impl SpriteComponent {
+    /// new
+    pub fn new(sprite_id: &'static str) -> Self {
+        SpriteComponent {
+            sprite_id: sprite_id.to_owned(),
+        }
     }
+}
+
+impl Component for SpriteComponent {
+    /// init
+    fn init(&mut self) {}
+
+    /// draw
+    fn draw(&self) {}
 
     /// update
     fn update(&mut self) {}

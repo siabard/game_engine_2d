@@ -16,6 +16,17 @@ use sdl2::keyboard::Keycode;
 
 const FPS: u32 = 60;
 const FRAME_DELAY: u32 = 1000 / FPS;
+/// NotFound
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
+pub enum NoSprite {
+    /// Not Exist
+    NotExist,
+    /// Cannot Found
+    CannotFound,
+}
+
+/// Sprite Result
+pub type ResultSprite<T> = Result<T, NoSprite>;
 
 /// SdlEngine
 pub struct SdlEngine<'a> {
@@ -83,12 +94,16 @@ impl<'a> SdlEngine<'a> {
     pub fn game_loop(&mut self) {
         self.is_running = true;
 
-        let mut player1 = Entity::new();
+        let mut player1 = Entity::new("p1".to_owned());
         player1.add_component(PositionComponent {
-            xpos: 50,
-            ypos: 50,
-            is_active: true,
+            xpos: 100,
+            ypos: 100,
         });
+        player1.add_component(SpriteComponent {
+            sprite_id: "char_ex".to_owned(),
+        });
+
+        self.add_sprite("char_ex", "assets/char.png", 100, 100);
 
         while self.is_running {
             let start_tick = self.timer.ticks();
@@ -97,17 +112,30 @@ impl<'a> SdlEngine<'a> {
 
             self.window.clear();
 
+            // Rendering Screen
             self.map.draw_map(&mut self.window);
-            for (_id, sprite) in &mut self.sprites {
-                sprite.update();
-                sprite.render(&mut self.window);
-            }
 
-            self.window.present();
-
+            // ECS를 이용한 렌더랑을 걸어보자!!!
             let _ = player1
                 .get_component_mut::<PositionComponent>()
                 .map(|e| e.update());
+            let pos = match player1.get_component::<PositionComponent>() {
+                Ok(p) => p,
+                Err(_) => &PositionComponent { xpos: 0, ypos: 0 },
+            };
+
+            match self.sprites.get_mut("char_ex") {
+                Some(s) => {
+                    s.set_xpos(pos.xpos);
+                    s.set_ypos(pos.ypos);
+                    s.update();
+                    s.render(&mut self.window);
+                }
+                _ => {}
+            }
+            self.window.present();
+
+            // FPS
             let tick_span = self.timer.ticks() - start_tick;
 
             if tick_span < FRAME_DELAY {

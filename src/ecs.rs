@@ -6,7 +6,7 @@
 extern crate uuid;
 
 use uuid::Uuid;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::any::{Any, TypeId};
 
 /// NotFound
@@ -29,15 +29,6 @@ pub trait Component: Any {
     /// Draw
     fn draw(&self);
 
-    /// is_active
-    fn is_active(&self) -> bool;
-
-    /// destroy
-    fn destroy(&mut self);
-
-    /// get_name
-    fn get_name(&self) -> &'static str;
-
     /// update
     fn update(&mut self);
 }
@@ -50,9 +41,7 @@ pub struct Entity {
 
 impl Entity {
     /// Constructor
-    pub fn new() -> Self {
-        let entity_id = Uuid::new_v4().simple().to_string();
-
+    pub fn new(entity_id: String) -> Self {
         Entity {
             entity_id: entity_id,
             components: HashMap::new(),
@@ -91,4 +80,48 @@ impl Entity {
 }
 
 /// System
-pub struct System {}
+#[derive(Default)]
+pub struct System {
+    /// Entry Map
+    pub entities: HashMap<String, Entity>,
+}
+
+impl System {
+    /// new
+    pub fn new() -> Self {
+        Default::default()
+    }
+
+    /// create_entity
+    pub fn create_entity(&mut self) -> &String {
+        let entity_id = Uuid::new_v4().simple().to_string();
+
+        self.entities
+            .insert(entity_id.clone(), Entity::new(entity_id.clone()));
+        &self.entities.get(&entity_id).unwrap().entity_id
+    }
+
+    /// set method
+    pub fn set<C: Component>(&mut self, id: String, comp: C) {
+        match self.entities.get_mut(&id) {
+            Some(ele) => ele.add_component::<C>(comp),
+            _ => {}
+        };
+    }
+
+    /// get method
+    pub fn get<C: Component>(&self, id: String) -> EcsResult<&C> {
+        match self.entities.get(&id) {
+            Some(ele) => ele.get_component::<C>(),
+            None => Err(NotFound::Entity),
+        }
+    }
+
+    /// mutable get method
+    pub fn get_mut<C: Component>(&mut self, id: String) -> EcsResult<&mut C> {
+        match self.entities.get_mut(&id) {
+            Some(ele) => ele.get_component_mut::<C>(),
+            None => Err(NotFound::Entity),
+        }
+    }
+}

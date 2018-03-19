@@ -72,8 +72,8 @@ impl App {
 
         let mut engine: SdlEngine = SdlEngine::new(canvas, event_pump, &texture_creator, timer);
 
-        engine.add_sprite("char", "assets/char.png", 0, 0);
-        engine.add_sprite("enemy", "assets/enemy.png", 50, 50);
+        //engine.add_sprite("char", "assets/char.png", 0, 0);
+        //engine.add_sprite("enemy", "assets/enemy.png", 50, 50);
 
         engine.game_loop();
     }
