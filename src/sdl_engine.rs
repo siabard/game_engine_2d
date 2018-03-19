@@ -14,6 +14,7 @@ use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use std::path::Path;
 use sdl2::image::LoadTexture;
+use vector_2d::*;
 
 const FPS: u32 = 60;
 const FRAME_DELAY: u32 = 1000 / FPS;
@@ -119,16 +120,21 @@ impl<'a> SdlEngine<'a> {
             // Rendering Screen
             self.map.draw_map(&mut self.window);
 
-            let mut xpos = HashMap::new();
-            let mut ypos = HashMap::new();
+            let mut positions = HashMap::new();
 
             // ECS를 이용한 렌더링을 걸어보자!!!
             for (id, entity) in &mut self.entities {
-                // PositionComponent를 갖는 경우 일정 틱마다 위치를 변경한다.
-                match entity.get_component::<PositionComponent>() {
+                // TransformComponent 갖는 경우 일정 틱마다 위치를 변경한다.
+                match entity.get_component_mut::<TransformComponent>() {
                     Ok(p) => {
-                        xpos.insert(id.clone(), p.xpos);
-                        ypos.insert(id.clone(), p.ypos);
+                        p.position += Vector2D { x: 5.0, y: 0.0 };
+                        positions.insert(
+                            id.clone(),
+                            Vector2D {
+                                x: p.position.x,
+                                y: p.position.y,
+                            },
+                        );
                     }
                     Err(_) => {}
                 };
@@ -137,15 +143,18 @@ impl<'a> SdlEngine<'a> {
                 // SpriteComponent를 갖는 경우 해당 위치에 Sprite를 노출한다.
                 match entity.get_component_mut::<SpriteComponent>() {
                     Ok(mut c) => {
+                        let position = positions.get(&id.clone()).unwrap();
+                        c.dest_rect.x = (*position).x as i32;
+                        c.dest_rect.y = (*position).y as i32;
+
+                        if c.dest_rect.x > 300 {
+                            c.texture_id = "enemy".to_owned();
+                        }
+
                         let texture_id = c.texture_id.clone();
 
                         let texture = self.textures.get(&texture_id);
 
-                        c.dest_rect.x = *xpos.get(&id.clone()).unwrap();
-                        c.dest_rect.y = *ypos.get(&id.clone()).unwrap();
-
-                        println!("{}", c.dest_rect.x);
-                        println!("{}", c.dest_rect.y);
                         let t = texture.as_ref().unwrap();
                         self.window
                             .copy(t, c.source_rect, c.dest_rect)
@@ -155,15 +164,6 @@ impl<'a> SdlEngine<'a> {
                 }
             }
 
-            for (id, entity) in &mut self.entities {
-                // PositionComponent를 갖는 경우 일정 틱마다 위치를 변경한다.
-                match entity.get_component_mut::<PositionComponent>() {
-                    Ok(p) => {
-                        p.update();
-                    }
-                    Err(_) => {}
-                };
-            }
             self.window.present();
 
             // FPS

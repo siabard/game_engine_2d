@@ -9,7 +9,7 @@ use sdl2::image::{INIT_JPG, INIT_PNG};
 use sdl_engine::*;
 use ecs::*;
 use components::*;
-
+use vector_2d::*;
 /// App
 pub struct App {
     title: &'static str,
@@ -83,10 +83,9 @@ impl App {
         let mut enemy = Entity::new("enemy".to_owned());
 
         // Entity Player 1 Init
-        player1.add_component::<PositionComponent>(PositionComponent {
+        player1.add_component::<TransformComponent>(TransformComponent {
             entity_id: "player1".to_owned(),
-            xpos: 50,
-            ypos: 50,
+            position: Vector2D { x: 50.0, y: 50.0 },
         });
         player1.add_component::<SpriteComponent>(SpriteComponent {
             entity_id: "player1".to_owned(),
@@ -96,10 +95,9 @@ impl App {
         });
 
         // Entity Player 2 Init
-        enemy.add_component::<PositionComponent>(PositionComponent {
+        enemy.add_component::<TransformComponent>(TransformComponent {
             entity_id: "enemy".to_owned(),
-            xpos: 100,
-            ypos: 100,
+            position: Vector2D { x: 100.0, y: 100.0 },
         });
         enemy.add_component::<SpriteComponent>(SpriteComponent {
             entity_id: "enemy".to_owned(),

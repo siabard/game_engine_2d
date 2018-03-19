@@ -11,3 +11,4 @@ pub mod sdl_engine;
 pub mod map;
 pub mod ecs;
 pub mod components;
+pub mod vector_2d;

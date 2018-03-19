@@ -1,47 +1,42 @@
 //! Components Definition
 extern crate sdl2;
 
+use vector_2d::*;
+
 /// Position Component
-pub struct PositionComponent {
+pub struct TransformComponent {
     /// entity_id
     pub entity_id: String,
-    /// xpos
-    pub xpos: i32,
-    /// ypos
-    pub ypos: i32,
+    /// position
+    pub position: Vector2D,
 }
 
-impl PositionComponent {
+impl TransformComponent {
     /// get_xpos
-    pub fn get_xpos(&self) -> i32 {
-        self.xpos
+    pub fn get_xpos(&self) -> f32 {
+        self.position.x
     }
 
     /// get_ypos
-    pub fn get_ypos(&self) -> i32 {
-        self.ypos
+    pub fn get_ypos(&self) -> f32 {
+        self.position.y
     }
 
     /// set xpos
-    pub fn set_pos(&mut self, x: i32, y: i32) {
-        self.xpos = x;
-        self.ypos = y;
+    pub fn set_pos(&mut self, x: f32, y: f32) {
+        self.position = Vector2D { x: x, y: y };
     }
 
     /// init
     pub fn init(&mut self) {
-        self.xpos = 0;
-        self.ypos = 0;
+        self.position = Vector2D { x: 0.0, y: 0.0 };
     }
 
     /// draw
     pub fn draw(&self) {}
 
     /// update
-    pub fn update(&mut self) {
-        self.xpos += 1;
-        self.ypos += 1;
-    }
+    pub fn update(&mut self) {}
 }
 /// Health Compoent
 pub struct HealthComponent {
