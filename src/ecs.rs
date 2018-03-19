@@ -6,7 +6,7 @@
 extern crate uuid;
 
 use uuid::Uuid;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use std::any::{Any, TypeId};
 
 /// NotFound
@@ -22,17 +22,9 @@ pub enum NotFound {
 pub type EcsResult<T> = Result<T, NotFound>;
 
 /// Component trait
-pub trait Component: Any {
-    /// init
-    fn init(&mut self);
+pub trait Component: Any {}
 
-    /// Draw
-    fn draw(&self);
-
-    /// update
-    fn update(&mut self);
-}
-
+impl<T: Any> Component for T {}
 /// Entity
 pub struct Entity {
     entity_id: String,

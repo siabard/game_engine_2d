@@ -44,6 +44,8 @@ pub struct SdlEngine<'a> {
     pub map: Map<'a>,
 
     is_running: bool,
+    /// Entities
+    entities: HashMap<&'static str, Entity>,
 }
 
 impl<'a> SdlEngine<'a> {
@@ -64,6 +66,7 @@ impl<'a> SdlEngine<'a> {
             timer: timer,
             is_running: false,
             map: map,
+            entities: HashMap::new(),
         }
     }
 
@@ -90,20 +93,34 @@ impl<'a> SdlEngine<'a> {
         }
     }
 
+    /// insert entity
+    pub fn add_entity(&mut self, entity_id: &'static str, entity: Entity) {
+        self.entities.insert(entity_id, entity);
+    }
+
+    /// remove_entity
+    pub fn remove_entity(&mut self, entity_id: &'static str) {
+        self.entities.remove(entity_id);
+    }
+
+    /// init_sprite
+    ///
+    /// SpriteComponent 를 가지고 있는 Entity가 있으면 대응하는 Sprite를 생성한다.
+    pub fn init_sprite(&mut self) {
+        for (id, entity) in &self.entities {
+            match entity.get_component::<SpriteComponent>() {
+                Ok(c) => {
+                    let mut sprite = Sprite::new(&self.texture_creator.unwrap(), 0, 0);
+                    sprite.set_texture(c.sprite_path);
+                    self.sprites.insert(id, sprite);
+                }
+                Err(_) => {}
+            }
+        }
+    }
     /// game loop
     pub fn game_loop(&mut self) {
         self.is_running = true;
-
-        let mut player1 = Entity::new("p1".to_owned());
-        player1.add_component(PositionComponent {
-            xpos: 100,
-            ypos: 100,
-        });
-        player1.add_component(SpriteComponent {
-            sprite_id: "char_ex".to_owned(),
-        });
-
-        self.add_sprite("char_ex", "assets/char.png", 100, 100);
 
         while self.is_running {
             let start_tick = self.timer.ticks();
@@ -116,22 +133,26 @@ impl<'a> SdlEngine<'a> {
             self.map.draw_map(&mut self.window);
 
             // ECS를 이용한 렌더랑을 걸어보자!!!
-            let _ = player1
-                .get_component_mut::<PositionComponent>()
-                .map(|e| e.update());
-            let pos = match player1.get_component::<PositionComponent>() {
-                Ok(p) => p,
-                Err(_) => &PositionComponent { xpos: 0, ypos: 0 },
-            };
+            for (id, entity) in &mut self.entities {
+                // PositionComponent를 갖는 경우 일정 틱마다 위치를 변경한다.
+                let pos = match entity.get_component_mut::<PositionComponent>() {
+                    Ok(mut p) => {
+                        p.update();
+                        p
+                    }
+                    Err(_) => &PositionComponent { xpos: 0, ypos: 0 },
+                };
 
-            match self.sprites.get_mut("char_ex") {
-                Some(s) => {
-                    s.set_xpos(pos.xpos);
-                    s.set_ypos(pos.ypos);
-                    s.update();
-                    s.render(&mut self.window);
+                // 등록된 Sprite는 해당 ID에 따라서 지정 위치에 노출한다.
+                match self.sprites.get_mut(id.to_owned()) {
+                    Some(s) => {
+                        s.set_xpos(pos.xpos);
+                        s.set_ypos(pos.ypos);
+                        s.update();
+                        s.render(&mut self.window);
+                    }
+                    _ => {}
                 }
-                _ => {}
             }
             self.window.present();
 

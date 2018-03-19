@@ -7,6 +7,8 @@ extern crate std;
 use sdl2::pixels::Color;
 use sdl2::image::{INIT_JPG, INIT_PNG};
 use sdl_engine::*;
+use ecs::*;
+use components::*;
 
 /// App
 pub struct App {
@@ -74,6 +76,28 @@ impl App {
 
         //engine.add_sprite("char", "assets/char.png", 0, 0);
         //engine.add_sprite("enemy", "assets/enemy.png", 50, 50);
+
+        let mut player1 = Entity::new("player1".to_owned());
+        let mut player2 = Entity::new("enemy".to_owned());
+
+        player1.add_component::<PositionComponent>(PositionComponent { xpos: 50, ypos: 50 });
+        player1.add_component::<SpriteComponent>(SpriteComponent {
+            sprite_id: "char",
+            sprite_path: "assets/char.png",
+        });
+
+        player2.add_component::<PositionComponent>(PositionComponent {
+            xpos: 100,
+            ypos: 100,
+        });
+        player2.add_component::<SpriteComponent>(SpriteComponent {
+            sprite_id: "enemy",
+            sprite_path: "assets/enemy.png",
+        });
+        engine.add_entity("char", player1);
+        engine.add_entity("enemy", player2);
+
+        engine.init_sprite();
 
         engine.game_loop();
     }
