@@ -2,8 +2,8 @@
 extern crate sdl2;
 extern crate std;
 
-use std::path::Path;
 use sdl2::image::LoadTexture;
+use std::path::Path;
 
 /// Map Structure
 pub struct Map<'a> {

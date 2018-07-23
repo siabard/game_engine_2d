@@ -36,7 +36,9 @@ impl TransformComponent {
     pub fn draw(&self) {}
 
     /// update
-    pub fn update(&mut self) {}
+    pub fn update(&mut self) {
+        self.position += Vector2D { x: 5.0, y: 0.0 };
+    }
 }
 /// Health Compoent
 pub struct HealthComponent {
@@ -90,6 +92,59 @@ impl SpriteComponent {
 
     /// init
     pub fn init(&mut self) {}
+
+    /// draw
+    pub fn draw(&self) {}
+
+    /// update
+    pub fn update(&mut self) {}
+}
+
+/// Sprite with Transform
+pub struct SpriteTransformComponet {
+    /// entity_id
+    pub entity_id: String,
+    trans: TransformComponent,
+    sprite: SpriteComponent,
+}
+
+impl SpriteTransformComponet {
+    /// new
+    pub fn new(sprite_id: &'static str, texture_id: &'static str) -> Self {
+        SpriteTransformComponet {
+            entity_id: sprite_id.to_owned(),
+            trans: TransformComponent {
+                entity_id: sprite_id.to_owned(),
+                position: Vector2D { x: 0.0, y: 0.0 },
+            },
+            sprite: SpriteComponent {
+                entity_id: sprite_id.to_owned(),
+                texture_id: texture_id.to_owned(),
+                source_rect: sdl2::rect::Rect::new(0, 0, 0, 0),
+                dest_rect: sdl2::rect::Rect::new(0, 0, 0, 0),
+            },
+        }
+    }
+
+    /// get_xpos
+    pub fn get_xpos(&self) -> f32 {
+        self.trans.get_xpos()
+    }
+
+    /// get_ypos
+    pub fn get_ypos(&self) -> f32 {
+        self.trans.get_ypos()
+    }
+
+    /// set xpos
+    pub fn set_pos(&mut self, x: f32, y: f32) {
+        self.trans.set_pos(x, y);
+    }
+
+    /// init
+    pub fn init(&mut self) {
+        self.trans.init();
+    }
 
     /// draw
     pub fn draw(&self) {}

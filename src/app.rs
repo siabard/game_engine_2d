@@ -81,6 +81,7 @@ impl App {
         // Initiate Entities
         let mut player1 = Entity::new("player1".to_owned());
         let mut enemy = Entity::new("enemy".to_owned());
+        let mut enemy2 = Entity::new("enemy2".to_owned());
 
         // Entity Player 1 Init
         player1.add_component::<TransformComponent>(TransformComponent {
@@ -106,9 +107,15 @@ impl App {
             dest_rect: sdl2::rect::Rect::new(0, 0, 64, 64),
         });
 
+        enemy2.add_component::<SpriteTransformComponet>(SpriteTransformComponet::new(
+            "enemy_2",
+            "enemy",
+        ));
+
         // Add entities to engine
         engine.add_entity("player1", player1);
         engine.add_entity("enemy", enemy);
+        engine.add_entity("enemy", enemy2);
 
         engine.game_loop();
     }

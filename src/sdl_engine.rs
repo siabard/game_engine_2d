@@ -6,14 +6,14 @@
 extern crate sdl2;
 extern crate std;
 
-use std::collections::HashMap;
-use map::*;
-use ecs::*;
 use components::*;
+use ecs::*;
+use map::*;
 use sdl2::event::Event;
-use sdl2::keyboard::Keycode;
-use std::path::Path;
 use sdl2::image::LoadTexture;
+use sdl2::keyboard::Keycode;
+use std::collections::HashMap;
+use std::path::Path;
 use vector_2d::*;
 
 const FPS: u32 = 60;
@@ -127,7 +127,8 @@ impl<'a> SdlEngine<'a> {
                 // TransformComponent 갖는 경우 일정 틱마다 위치를 변경한다.
                 match entity.get_component_mut::<TransformComponent>() {
                     Ok(p) => {
-                        p.position += Vector2D { x: 5.0, y: 0.0 };
+                        //p.position += Vector2D { x: 5.0, y: 0.0 };
+                        p.update();
                         positions.insert(
                             id.clone(),
                             Vector2D {
